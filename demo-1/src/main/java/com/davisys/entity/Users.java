@@ -64,7 +64,7 @@ public class Users {
 //	@JsonManagedReference
 	@ManyToMany(fetch = FetchType.LAZY, targetEntity = Roles.class)
 	@JoinTable(name = "user_role", joinColumns = @JoinColumn(name = "userid", referencedColumnName = "userid"), inverseJoinColumns = @JoinColumn(name = "role_id", referencedColumnName = "role_id"))
-	List<Roles> roles = new ArrayList<Roles>();
+	List<Roles> roles;
 //	Set<Roles> roles = new HashSet<>();
 
 //	@Override

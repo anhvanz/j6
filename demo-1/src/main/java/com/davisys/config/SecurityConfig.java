@@ -24,42 +24,38 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
-	@Autowired
-	JwtAuthFilter authFilter;
-	
-	/*
-	 * @Autowired AuthenticationProvider authenticationProvider;
-	 */
+    @Autowired
+    JwtAuthFilter authFilter;
+
+    /*
+     * @Autowired AuthenticationProvider authenticationProvider;
+     */
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-    	//http.csrf().disable();
-    	http.cors().disable();
+        // http.csrf().disable();
+        http.cors().disable().csrf().disable();
         http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
         http.authorizeRequests()
                 .antMatchers("/anony").permitAll()
                 .antMatchers("/anony/login").permitAll()
-                .antMatchers("/user").hasAnyAuthority("USER")
-                .antMatchers("/admin").hasAnyRole("ADMIN","USER")
-                .and()
-                .csrf().disable()
-                .authorizeRequests().anyRequest().
-             authenticated()
+                .antMatchers("/user").hasAnyRole("USER")
+                .antMatchers("/admin").hasAnyRole("ADMIN", "USER")
+                .anyRequest().authenticated()
                 .and()
                 .addFilterBefore(authFilter, UsernamePasswordAuthenticationFilter.class);
 
-		/*
-		 * http.authorizeHttpRequests() .requestMatchers("/login")
-		 * .hasAnyAuthority("USER","ADMIN");
-		 */
+        /*
+         * http.authorizeHttpRequests() .requestMatchers("/login")
+         * .hasAnyAuthority("USER","ADMIN");
+         */
     }
-    
-    
+
     @Autowired
     private UserDetailsServiceImpl userDetailsService;
 
     @Autowired
     private PasswordEncoder passwordEncoder;
-    
+
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
@@ -75,7 +71,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     public AuthenticationManager authenticationManagerBean() throws Exception {
         return super.authenticationManagerBean();
     }
-    
+
     @Bean
     public AuthenticationProvider authenticationProvider() {
         DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
@@ -83,14 +79,16 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         authProvider.setPasswordEncoder(passwordEncoder());
         return authProvider;
     }
-    
- // Bean UserDetailsService trả về bởi JdbcDaoImpl
-//    @Bean
-//    public UserDetailsService userDetailsService(DataSource dataSource) {
-//        JdbcDaoImpl jdbcDao = new JdbcDaoImpl();
-//        jdbcDao.setDataSource(dataSource);
-//        jdbcDao.setUsersByUsernameQuery("SELECT username, password, enabled FROM users WHERE username = ?");
-//        jdbcDao.setAuthoritiesByUsernameQuery("SELECT username, authority FROM authorities WHERE username = ?");
-//        return jdbcDao;
-//    }
+
+    // Bean UserDetailsService trả về bởi JdbcDaoImpl
+    // @Bean
+    // public UserDetailsService userDetailsService(DataSource dataSource) {
+    // JdbcDaoImpl jdbcDao = new JdbcDaoImpl();
+    // jdbcDao.setDataSource(dataSource);
+    // jdbcDao.setUsersByUsernameQuery("SELECT username, password, enabled FROM
+    // users WHERE username = ?");
+    // jdbcDao.setAuthoritiesByUsernameQuery("SELECT username, authority FROM
+    // authorities WHERE username = ?");
+    // return jdbcDao;
+    // }
 }
